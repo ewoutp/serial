@@ -74,7 +74,7 @@ func openPort(name string, baud int, readTimeout time.Duration, size int) (p *Po
 	vmin, vtime := posixTimeoutValues(readTimeout)
 	t := syscall.Termios{
 		Iflag:  syscall.IGNPAR,
-		Cflag:  sizeFlag | syscall.CREAD | syscall.CLOCAL | rate,
+		Cflag:  uint32(sizeFlag) | syscall.CREAD | syscall.CLOCAL | rate,
 		Cc:     [32]uint8{syscall.VMIN: vmin, syscall.VTIME: vtime},
 		Ispeed: rate,
 		Ospeed: rate,
