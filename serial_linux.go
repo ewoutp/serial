@@ -9,7 +9,7 @@ import (
 	"unsafe"
 )
 
-func openPort(name string, baud int, readTimeout time.Duration) (p *Port, err error) {
+func openPort(name string, baud int, readTimeout time.Duration, size int) (p *Port, err error) {
 	var bauds = map[int]uint32{
 		50:      syscall.B50,
 		75:      syscall.B75,
@@ -60,11 +60,21 @@ func openPort(name string, baud int, readTimeout time.Duration) (p *Port, err er
 		}
 	}()
 
+	sizeFlag := 0
+	switch size {
+	case 0, 8:
+		sizeFlag = syscall.CS8
+	case 7:
+		sizeFlag = syscall.CS7
+	case 6:
+		sizeFlag = syscall.CS6
+	}
+
 	fd := f.Fd()
 	vmin, vtime := posixTimeoutValues(readTimeout)
 	t := syscall.Termios{
 		Iflag:  syscall.IGNPAR,
-		Cflag:  syscall.CS8 | syscall.CREAD | syscall.CLOCAL | rate,
+		Cflag:  sizeFlag | syscall.CREAD | syscall.CLOCAL | rate,
 		Cc:     [32]uint8{syscall.VMIN: vmin, syscall.VTIME: vtime},
 		Ispeed: rate,
 		Ospeed: rate,
