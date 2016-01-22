@@ -80,9 +80,9 @@ func openPort(name string, baud int, readTimeout time.Duration, size int) (p *Po
 		sizeFlag = C.CS6
 	}
 
-	// Select local mode, turn off parity, set to <size> bits
-	st.c_cflag &= ^C.tcflag_t(C.CSIZE | C.PARENB)
-	st.c_cflag |= (C.CLOCAL | C.CREAD | C.tcflag_t(sizeFlag))
+	// Select local mode, turn on parity, set to <size> bits
+	st.c_cflag &= ^C.tcflag_t(C.CSIZE)
+	st.c_cflag |= (C.CLOCAL | C.CREAD | C.tcflag_t(sizeFlag) | C.PARENB)
 
 	// Select raw mode
 	st.c_lflag &= ^C.tcflag_t(C.ICANON | C.ECHO | C.ECHOE | C.ISIG)
